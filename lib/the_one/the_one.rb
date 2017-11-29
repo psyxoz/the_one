@@ -10,8 +10,10 @@ require_relative 'routes/sentinels'
 
 module TheOne
   def self.perform
-    [ Routes::Sentinels ].each do |klass|
-      klass.routes.each { |route| upload(route) }
+    [ Routes::Sentinels, Routes::Sniffers ].each do |klass|
+      klass.routes do |route|
+        upload(route)
+      end
     end
   end
 end

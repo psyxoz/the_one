@@ -5,7 +5,7 @@ module TheOne::Routes
 
     class << self
       def download
-        unzip(connection.get('/routes', source: self.class.name).body)
+        unzip(connection.get('/routes', source: self.name).body)
       end
 
       def upload(payload)
@@ -28,6 +28,10 @@ module TheOne::Routes
         @connection ||= Faraday.new(url: ZION_HTTP_URL, params: { passphrase: ZION_PASSPHRASE }) do |c|
           c.adapter(:net_http)
         end
+      end
+
+      def csv_options
+        @csv_options ||= { headers: true, header_converters: :symbol, skip_blanks: true }
       end
     end
   end
