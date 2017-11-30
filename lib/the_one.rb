@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'time'
 require 'csv'
 require 'zip'

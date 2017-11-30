@@ -8,7 +8,9 @@ end
 require 'dotenv/load'
 require_relative('lib/the_one')
 
-task :default do
+task :the_one do
   TheOne.perform
   puts 'All set!'
 end
+
+task default: :the_one

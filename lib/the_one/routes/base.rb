@@ -29,9 +29,10 @@ module TheOne::Routes
       @connection ||= begin
         params = { passphrase: ZION_PASSPHRASE, source: source }
         Faraday.new(url: ZION_HTTP_URL, params: params) do |c|
+          c.request  :retry, max: 5, interval: 0.1, backoff_factor: 2
           c.request  :url_encoded
           c.response :logger
-          c.adapter Faraday.default_adapter
+          c.adapter  Faraday.default_adapter
         end
       end
     end
