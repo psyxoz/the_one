@@ -1,6 +1,12 @@
 module TheOne
   module Helpers
-    CSV_OPTIONS = { headers: true, header_converters: :symbol, skip_blanks: true }.freeze
+    CSV_OPTIONS = {
+      headers: true,
+      header_converters: :symbol,
+      skip_blanks: true,
+      quote_char: '"',
+      col_sep: ', '
+    }.freeze
 
     def unzip(response)
       {}.tap do |items|

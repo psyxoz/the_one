@@ -18,7 +18,7 @@ module TheOne::Routes
         duration_in_seconds = 0
         start_time = Time.parse(payload[:time]).utc
 
-        sequences[payload[:route_id]].sort.each do |node_time_id|
+        sequences[payload[:route_id]].each do |node_time_id|
           next unless node_times[node_time_id]
 
           route[:start_node] ||= node_times[node_time_id][:start_node]
@@ -40,7 +40,7 @@ module TheOne::Routes
     end
 
     def node_times
-      @node_times ||= [].tap do |rows|
+      @node_times ||= {}.tap do |rows|
         CSV.parse(files['node_times.csv'], CSV_OPTIONS) do |row|
           rows[row[:node_time_id]] = row
         end

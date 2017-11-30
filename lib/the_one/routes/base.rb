@@ -10,18 +10,28 @@ module TheOne::Routes
     end
 
     def download
-      unzip(connection.get('/routes', source: self.class.name).body)
+      response = connection.get('/the_one/routes').body
+      unzip(response)
     end
 
     def upload(payload)
-      connection.post('/routes', payload)
+      connection.post('/the_one/routes', payload)
     end
 
     private
 
+    def source
+      @source ||= self.class.name.split('::').last.downcase
+    end
+
     def connection
-      @connection ||= Faraday.new(url: ZION_HTTP_URL, params: { passphrase: ZION_PASSPHRASE }) do |c|
-        c.adapter(:net_http)
+      @connection ||= begin
+        params = { passphrase: ZION_PASSPHRASE, source: source }
+        Faraday.new(url: ZION_HTTP_URL, params: params) do |c|
+          c.request  :url_encoded
+          c.response :logger
+          c.adapter Faraday.default_adapter
+        end
       end
     end
   end

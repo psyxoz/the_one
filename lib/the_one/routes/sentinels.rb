@@ -1,7 +1,7 @@
 module TheOne::Routes
   class Sentinels < Base
     def routes
-      parse_routes.each do |items|
+      parse_routes.each do |_, items|
         next if items.size < 2
         items.sort_by! { |item| item[:index] }
 

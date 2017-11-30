@@ -13,8 +13,9 @@ require_relative 'routes/sniffers'
 module TheOne
   def self.perform
     [ Routes::Sentinels, Routes::Sniffers ].each do |klass|
-      klass.new.routes do |route|
-        upload(route)
+      instance = klass.new
+      instance.routes do |route|
+        instance.upload(route)
       end
     end
   end
