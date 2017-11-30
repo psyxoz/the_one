@@ -24,7 +24,7 @@ module TheOne::Routes
     end
 
     def grouped_routes
-      @grouped_routes ||= Hash.new { |h,k| h[k] = [] }.tap do |rows|
+      Hash.new { |h,k| h[k] = [] }.tap do |rows|
         MultiJson.load(files['routes.json'], symbolize_keys: true)[:routes].each do |row|
           node_pair = node_pairs[row[:node_pair_id]]
           next unless node_pair

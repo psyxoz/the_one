@@ -18,6 +18,7 @@ require 'webmock/rspec'
 require 'factory_bot'
 require 'dotenv/load'
 require 'support/factory_bot'
+require 'support/file_fixtures'
 require_relative '../lib/the_one'
 
 RSpec.configure do |config|

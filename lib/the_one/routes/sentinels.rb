@@ -1,7 +1,7 @@
 module TheOne::Routes
   class Sentinels < Base
     def routes
-      parse_routes.each do |_, items|
+      parsed_routes.each do |_, items|
         next if items.size < 2
         items.sort_by! { |item| item[:index] }
 
@@ -18,7 +18,7 @@ module TheOne::Routes
 
     private
 
-    def parse_routes
+    def parsed_routes
       Hash.new { |h,k| h[k] = [] }.tap do |rows|
         CSV.parse(files['routes.csv'], CSV_OPTIONS) do |row|
           rows[row[:route_id]] << row
