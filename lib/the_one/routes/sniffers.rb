@@ -1,49 +1,48 @@
 module TheOne::Routes
   class Sniffers < Base
-    class << self
-      def routes
-        files = download
-        sequences = parse_sequences(files['sequences.csv'])
-        node_times = parse_node_times(files['node_times.csv'])
+    def routes
+      CSV.parse(files['routes.csv'], CSV_OPTIONS) do |raw_route|
+        next unless sequences.include?(raw_route[:route_id])
 
-        CSV.parse(files['routes.csv'], csv_options) do |route|
-          next unless sequences.include?(route[:route_id])
+        route = build_route(raw_route)
+        next if route[:start_node].nil? || route[:end_node].nil?
 
-          data = {}
-          duration_in_milliseconds = 0
-          start_time = Time.parse(route[:time]).utc
+        yield(route)
+      end
+    end
 
-          sequences[route[:route_id]].sort.each do |node_time_id|
-            next unless node_times[node_time_id]
+    private
 
-            data[:start_node] ||= node_times[node_time_id][:start_node]
-            data[:end_node] = node_times[node_time_id][:end_node]
-            duration_in_milliseconds += node_times[node_time_id][:duration_in_milliseconds].to_i
-          end
+    def build_route(payload)
+      {}.tap do |route|
+        duration_in_seconds = 0
+        start_time = Time.parse(payload[:time]).utc
 
-          data[:start_time] = start_time.strftime('%FT%T')
-          data[:end_time] = (start_time + duration_in_milliseconds).strftime('%FT%T')
+        sequences[payload[:route_id]].sort.each do |node_time_id|
+          next unless node_times[node_time_id]
 
-          next if data[:start_node].nil? || data[:end_node].nil?
-          yield(data)
+          route[:start_node] ||= node_times[node_time_id][:start_node]
+          route[:end_node] = node_times[node_time_id][:end_node]
+          duration_in_seconds += (node_times[node_time_id][:duration_in_milliseconds].to_i / 1000)
+        end
+
+        route[:start_time] = start_time.strftime('%FT%T')
+        route[:end_time] = (start_time + duration_in_seconds).strftime('%FT%T')
+      end
+    end
+
+    def sequences
+      @sequences ||= Hash.new { |h,k| h[k] = [] }.tap do |rows|
+        CSV.parse(files['sequences.csv'], CSV_OPTIONS) do |row|
+          rows[row[:route_id]] << row[:node_time_id]
         end
       end
+    end
 
-      private
-
-      def parse_sequences(csv)
-        Hash.new { |h,k| h[k] = [] }.tap do |rows|
-          CSV.parse(csv, csv_options) do |row|
-            rows[row[:route_id]] << row[:node_time_id]
-          end
-        end
-      end
-
-      def parse_node_times(csv)
-        [].tap do |rows|
-          CSV.parse(csv, csv_options) do |row|
-            rows[row[:node_time_id]] = row
-          end
+    def node_times
+      @node_times ||= [].tap do |rows|
+        CSV.parse(files['node_times.csv'], CSV_OPTIONS) do |row|
+          rows[row[:node_time_id]] = row
         end
       end
     end
