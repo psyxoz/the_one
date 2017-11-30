@@ -6,7 +6,7 @@ rescue LoadError
 end
 
 require 'dotenv/load'
-require_relative('lib/the_one/the_one')
+require_relative('lib/the_one')
 
 task :default do
   TheOne.perform
