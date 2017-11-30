@@ -2,6 +2,7 @@ module TheOne::Routes
   class Base
     ZION_HTTP_URL   = ENV.fetch('ZION_HTTP_URL').freeze
     ZION_PASSPHRASE = ENV.fetch('ZION_PASSPHRASE').freeze
+    ZION_ROUTES_URL = '/the_one/routes'.freeze
 
     include TheOne::Helpers
 
@@ -10,12 +11,12 @@ module TheOne::Routes
     end
 
     def download
-      response = connection.get('/the_one/routes').body
+      response = connection.get(ZION_ROUTES_URL).body
       unzip(response)
     end
 
     def upload(payload)
-      connection.post('/the_one/routes', payload)
+      connection.post(ZION_ROUTES_URL, payload)
     end
 
     private
